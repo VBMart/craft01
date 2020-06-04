@@ -1,0 +1,42 @@
+version: '2'
+services:
+  php:
+    container_name: craft01_php
+    image: yiisoftware/yii2-php:7.3-apache
+    volumes:
+      - ~/.composer-docker/cache:/root/.composer/cache:delegated
+      - ./:/app:delegated
+    ports:
+      - 8000:80
+    networks:
+      - backend
+
+  mysql:
+    container_name: craft01_mysql
+    restart: always
+    image: mysql:5.7
+    #ports:
+    #    - "33061:3306"
+    environment:
+        - MYSQL_ALLOW_EMPTY_PASSWORD=1
+    volumes:
+        - ./storage/database:/var/lib/mysql
+        - ./docker-my.cnf:/etc/my.cnf
+    networks:
+      - backend
+
+  phpmyadmin:
+    container_name: craft01_phpmyadmin
+    image: phpmyadmin/phpmyadmin:latest
+    environment:
+      - VIRTUAL_HOST=phpmyadmin.loc
+      - PMA_HOST=mysql
+      - PMA_USER=root
+    restart: always
+    ports:
+      - 8080:80
+    networks:
+      - backend
+
+networks:
+  backend:
